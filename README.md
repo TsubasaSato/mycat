@@ -1,38 +1,38 @@
-# �ڎ�
-1. �͂��߂�
-1.1 �g�p��̒���
-2. ���s��
-2.1 �𓀂����ۂ̃t�@�C���\��
-2.2 mycat.go�̒��g
-2.3 �R�}���h�̃R���p�C�����@
-2.4�@�R�}���h���s���@
-3. �R�}���h���쐬���Ă݂�
-3.1 �H�v�����_
-3.2 �����ƍH�v�ł����_
+# 目次
+1. はじめに
+1.1 使用上の注意
+2. 実行環境
+2.1 解凍した際のファイル構造
+2.2 mycat.goの中身
+2.3 コマンドのコンパイル方法
+2.4　コマンド実行方法
+3. コマンドを作成してみて
+3.1 工夫した点
+3.2 もっと工夫できた点
 
-# 1. �͂��߂�
-Go������ŋߊw�юn�߂��̂ŁAcat�R�}���h���ǂ���Go�ō쐬���Č��悤�Ǝv���B
+# 1. はじめに
+Go言語を最近学び始めたので、catコマンドもどきをGoで作成して見ようと思う。
 
-���̃v���O�����Amycat�͈����ɗ^����ꂽ�e�L�X�g�t�@�C�����̃p�X���擾���A
-���̃t�@�C�����̕��͂���s���W���o�͂ɏo�͂���R�}���h�ł���B
-�I�v�V����-n���w�肷�邱�Ƃōs���ɒʂ��ԍ���t�^���邱�Ƃ��\�ł���B
+このプログラム、mycatは引数に与えられたテキストファイル名のパスを取得し、
+そのファイル内の文章を一行ずつ標準出力に出力するコマンドである。
+オプション-nを指定することで行頭に通し番号を付与することも可能である。
 
-## 1.1 �g�p��̒���
-���s�t�@�C�����Ƀe�L�X�g�t�@�C�������݂��Ă���O��Ńv���O�������쐬���Ă��邽�߁A
-mycat.exe�����݂���f�B���N�g�����̃e�L�X�g�t�@�C���������Ή����Ă��Ȃ��B
+## 1.1 使用上の注意
+実行ファイル内にテキストファイルが存在している前提でプログラムを作成しているため、
+mycat.exeが存在するディレクトリ内のテキストファイル名しか対応していない。
 
-# 2. ���s��
+# 2. 実行環境
 
-## 2.1 �𓀂����ۂ̃t�@�C���\��
-mycat���N���b�N�����(GitHub�ɔ�т܂�)
+## 2.1 解凍した際のファイル構造
 mycat/
- ��mycat.go
- ��test_1.txt
- ��test_2.txt
- ��README.txt
+ ├mycat.go
+ ├test_1.txt
+ ├test_2.txt
+ └README.txt
 
-## 2.2 mycat.go�̒��g
+## 2.2 mycat.goの中身
 """go
+
 package main
 
 import (
@@ -44,30 +44,28 @@ import (
 )
 
 func main() {
-	var n =flag.Bool("n",false,"�ʂ��ԍ���t�^����")
+	var n =flag.Bool("n",false,"通し番号を付与する")
 	flag.Parse()
 	var(
 		files = flag.Args()
 		path,err = os.Executable()
 	)
 	if err!=nil{
-		fmt.Fprintln(os.Stderr,"�ǂݍ��݂Ɏ��s���܂���",err)
+		fmt.Fprintln(os.Stderr,"読み込みに失敗しました",err)
 	}
-
-	//���s�t�@�C���̃f�B���N�g�������擾
+	//実行ファイルのディレクトリ名を取得
 	path=filepath.Dir(path)
-	//�ʂ��ԍ��̗p��
+	//通し番号の用意
 	i:=1
-
 	for x:=0;x<len(files);x++{
 		sf,err:=os.Open(filepath.Join(path,files[x]))
 		if err!=nil{
-			fmt.Fprintln(os.Stderr,"�ǂݍ��݂Ɏ��s���܂���",err)
+			fmt.Fprintln(os.Stderr,"読み込みに失敗しました",err)
 		}else{
 			scanner :=bufio.NewScanner(sf)
 			for ;scanner.Scan();i++{
 				if *n{
-					//�I�v�V����������ꍇ
+					//オプションがある場合
 					fmt.Printf("%v: ",i)
 				}
 				fmt.Println(scanner.Text())
@@ -78,26 +76,26 @@ func main() {
 }
 """
 
-## 2.3 �R�}���h�̃R���p�C�����@
+## 2.3 コマンドのコンパイル方法
 """cmd
 $go build mycat.go
 """
-## 2.4 �R�}���h���s���@
+## 2.4 コマンド実行方法
 """cmd
-$mycat [�I�v�V����] [�t�@�C����]...
+$mycat [オプション] [ファイル名]...
 """
 
-�g�p�ł���I�v�V����
--n : �s���ɒʂ��ԍ���t�^���邱�Ƃ��ł���
+使用できるオプション
+-n : 行頭に通し番号を付与することができる
 
-# 3. �R�}���h���쐬���Ă݂�
-## 3.1 �H�v�����_
-- �G���[���������������_�ł���B���s�t�@�C���̃p�X�A�e�L�X�g�t�@�C���̃p�X���擾�ł��Ȃ������ۂ̓G���[�o�͂��o���悤�ɂ����B
-���݂��Ȃ��t�@�C�������w�肳�ꂽ�ꍇ���������G���[���������B
-- �����Ɏw�肳���e�L�X�g�t�@�C���̐��͂����ł��w��ł���B
+# 3. コマンドを作成してみて
+## 3.1 工夫した点
+- エラー処理を実装した点である。実行ファイルのパス、テキストファイルのパスを取得できなかった際はエラー出力を出すようにした。
+実在しないファイル名を指定された場合も正しくエラー処理される。
+- 引数に指定されるテキストファイルの数はいくつでも指定できる。
 
-## 3.2 �����ƍH�v�ł����_
-�����Bool�^�̃I�v�V���������������Ȃ��������A
+## 3.2 もっと工夫できた点
+今回はBool型のオプションしか実装しなかったが、
 - flag.String()
 - flag.Int()
-��p���邱�ƂŁA���╶������w�肷��I�v�V�������쐬�ł����B
+を用いることで、数や文字列を指定するオプションも作成できた。
