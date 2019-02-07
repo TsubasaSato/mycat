@@ -34,6 +34,7 @@ mycat.exeが存在するディレクトリ内のテキストファイル名し�
 
 ## 2.1 解凍した際のファイル構造
 mycatをクリックすると(GitHubに飛びます)
+
 [mycat](https://github.com/TsubasaSato/mycat)/
 
  ├mycat.go
